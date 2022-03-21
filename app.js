@@ -85,7 +85,7 @@ app.use(function(req, res, next) {
 });
 
 //routes middlewares
-app.use('/api/v1/fee', fee);
+app.use('/', fee);
 
 // checking insurance status every minute with node-cron
 // cron.schedule('2 * * * *', periodController.updateUsersInsuranceStatus);
