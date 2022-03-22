@@ -46,31 +46,19 @@ exports.storeFeeRate = async(req, res, next) => {
 exports.calculateFee = async(req, res, next) => {
     try {
        
-            /*
-            {
-    "ID": 91203,
-    "Amount": 5000,
-    "Currency": "NGN",
-    "CurrencyCountry": "NG",
-    "Customer": {
-        "ID": 2211232,
-        "EmailAddress": "anonimized29900@anon.io",
-        "FullName": "Abel Eden",
-        "BearsFee": true
-    },
-    "PaymentEntity": {
-        "ID": 2203454,
-        "Issuer": "GTBANK",
-        "Brand": "MASTERCARD",
-        "Number": "530191******2903",
-        "SixID": 530191,
-        "Type": "CREDIT-CARD",
-        "Country": "NG"
-    }
-}
-            
-            */
+        const conditions = {};
+        
+        //find users from database
+        let feeRates = await Fee.find(conditions).sort({ _id: -1 });
+        // let feeRates = await Fee.find({});
 
+             //check if user exists
+             if (!feeRates) {
+                throw createError(404, 'fee rates does not exist');
+            }
+
+            console.log('feeRate :', feeRates);
+        
     let inputForCalculation = req.body;
     console.log("The input For Calculation are:", inputForCalculation);
 
