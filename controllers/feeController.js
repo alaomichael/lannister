@@ -20,25 +20,25 @@ exports.storeFeeRate = async(req, res, next) => {
         let arr = configuration.split('\n');
         console.log("The splitted request payload:", arr);
 
-        let arr2 = configuration.split(' '); 
+        let arr2 = configuration.split(':'); 
         console.log("The splitted request payload:", arr2);
 
-            let updatedDataAfterActivation = {
-                ...req.body,
-            };
-let id = req.params.id;
-            let userToUpdate = await Fee.findByIdAndUpdate(
-                id,
-                updatedDataAfterActivation, {
-                    new: true,
-                    runValidators: true,
-                }
-            );
+//             let updatedDataAfterActivation = {
+//                 ...req.body,
+//             };
+// let id = req.params.id;
+//             let userToUpdate = await Fee.findByIdAndUpdate(
+//                 id,
+//                 updatedDataAfterActivation, {
+//                     new: true,
+//                     runValidators: true,
+//                 }
+//             );
 
-            //check if user exists
-            if (!userToUpdate) {
-                throw createError(404, 'User Account does not exist');
-            }
+//             //check if user exists
+//             if (!userToUpdate) {
+//                 throw createError(404, 'User Account does not exist');
+//             }
 
 
             //send user to client
@@ -121,6 +121,7 @@ exports.calculateFee = async(req, res, next) => {
 //javascript multiple case switch statement
 let appliedFee = 0;
 let chargeAmount = 0;
+let SettlementAmount = 0;
 let amount = Amount;
 let rate="";
 switch(ID) {
@@ -128,30 +129,61 @@ switch(ID) {
         rate = "APPLY PERC 1.4";
         appliedFee = ((1.4 * amount ) / 100);
         chargeAmount = amount  + appliedFee;
+        SettlementAmount = amount;
+        if(BearsFee === false ){
+            chargeAmount = amount;
+         SettlementAmount = chargeAmount - appliedFee;
+        };
         break;
     case "LNPY1222":
         rate =  "APPLY PERC 3.8";
         appliedFee = ((3.8 * amount ) / 100);
         chargeAmount = amount  + appliedFee;
+        SettlementAmount = amount;
+        if(BearsFee === false ){
+            chargeAmount = amount;
+         SettlementAmount = chargeAmount - appliedFee;
+        };
         break;
     case "LNPY1223":
         rate =  "APPLY PERC 5.8";
         appliedFee = ((5.8 * amount ) / 100);
         chargeAmount = amount  + appliedFee;
+        SettlementAmount = amount;
+        if(BearsFee === false ){
+            chargeAmount = amount;
+         SettlementAmount = chargeAmount - appliedFee;
+        };
         break;
     case "LNPY1224":
         rate =  "APPLY FLAT_PERC 20:0.5";
         appliedFee = 20 + ((0.5 * amount ) / 100);
         chargeAmount = amount  + appliedFee;
+        SettlementAmount = amount;
+        if(BearsFee === false ){
+            chargeAmount = amount;
+         SettlementAmount = chargeAmount - appliedFee;
+        };
         break;
         case "LNPY1225":
         rate =  "APPLY FLAT_PERC 20:0.5";
         appliedFee = 20 + ((0.5 * amount ) / 100);
         chargeAmount = amount  + appliedFee;
+        SettlementAmount = amount;
+        if(BearsFee === false ){
+            chargeAmount = amount;
+         SettlementAmount = chargeAmount - appliedFee;
+        };
         break;
     default:
         rate = "Unknown";
 }
+
+/**
+ * If Customer.BearsFee is true, ChargeAmount = Transaction Amount + AppliedFeeValue
+If Customer.BearsFee is false, ChargeAmount = Transaction Amount
+SettlementAmount The amount LannisterPay will settle the merchant the transaction belongs to after the applied fee has been deducted. In essence: SettlementAmount = ChargeAmount - AppliedFeeValue
+*/
 
 console.log("The rate is:", rate);
 
@@ -161,7 +193,7 @@ console.log("The rate is:", rate);
                     AppliedFeeID: ID,
                     AppliedFeeValue: appliedFee,
                     ChargeAmount: chargeAmount,
-                    SettlementAmount: amount
+                    SettlementAmount: SettlementAmount
         
             });
         
