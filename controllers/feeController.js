@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 /* eslint-disable prettier/prettier */
 const jwt = require('jsonwebtoken');
 const createError = require('http-errors');
@@ -92,31 +93,75 @@ exports.calculateFee = async(req, res, next) => {
             
             */
 
+    let inputForCalculation = req.body;
+    console.log("The input For Calculation are:", inputForCalculation);
+
+    let {ID,
+        Amount,
+        Currency,
+        CurrencyCountry,
+        PaymentEntity,
+        Customer
+        }  = req.body;
+
+        let {
+            Issuer,
+            Brand,
+            Type,
+            Country,
+            }  = PaymentEntity;
+            console.log("The Issuer is:", Issuer);
+            console.log("The Brand is:", Brand);
+            console.log("The Type is:", Type);
+            console.log("The Country is:", Country);
+
+
+        let {BearsFee}  = Customer;
+        console.log("Customer Bears Fee:", BearsFee);
 //javascript multiple case switch statement
-var ID = "LNPY0222";
-var rate="";
-switch(color) {
-    case "yellow":case "pink":case "orange":
+let appliedFee = 0;
+let chargeAmount = 0;
+let amount = Amount;
+let rate="";
+switch(ID) {
+    case "LNPY1221":
         rate = "APPLY PERC 1.4";
+        appliedFee = ((1.4 * amount ) / 100);
+        chargeAmount = amount  + appliedFee;
         break;
-    case "blue":case "purple":case "brown":
-        rate =  "APPLY PERC 1.4";
+    case "LNPY1222":
+        rate =  "APPLY PERC 3.8";
+        appliedFee = ((3.8 * amount ) / 100);
+        chargeAmount = amount  + appliedFee;
+        break;
+    case "LNPY1223":
+        rate =  "APPLY PERC 5.8";
+        appliedFee = ((5.8 * amount ) / 100);
+        chargeAmount = amount  + appliedFee;
+        break;
+    case "LNPY1224":
+        rate =  "APPLY FLAT_PERC 20:0.5";
+        appliedFee = 20 + ((0.5 * amount ) / 100);
+        chargeAmount = amount  + appliedFee;
+        break;
+        case "LNPY1225":
+        rate =  "APPLY FLAT_PERC 20:0.5";
+        appliedFee = 20 + ((0.5 * amount ) / 100);
+        chargeAmount = amount  + appliedFee;
         break;
     default:
         rate = "Unknown";
 }
 
-console.log("The color is:", rate);
-//darkOrLight="Light"
-
+console.log("The rate is:", rate);
 
             //send user to client
             res.status(200).json({
               
-                    AppliedFeeID: "LNPY0222",
-                    AppliedFeeValue: 230,
-                    ChargeAmount: 5230,
-                    SettlementAmount: 5000
+                    AppliedFeeID: ID,
+                    AppliedFeeValue: appliedFee,
+                    ChargeAmount: chargeAmount,
+                    SettlementAmount: amount
         
             });
         

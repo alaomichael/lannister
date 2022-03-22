@@ -88,7 +88,12 @@ app.use(function(req, res, next) {
 app.use('/', fee);
 
 // checking insurance status every minute with node-cron
-// cron.schedule('2 * * * *', periodController.updateUsersInsuranceStatus);
+// cron.schedule('2 * * * *', periodController.getFeeRate);
+
+// Home page
+app.get('/', (req, res) => {
+    res.render('Welcome to Lannister Pay.') ;
+});
 
 app.all('*', (req, res, next) => {
     // res.status(404).sendFile(__dirname + '/public/mylocation.html');
