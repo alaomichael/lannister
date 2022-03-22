@@ -91,7 +91,6 @@ exports.calculateFee = async(req, res, next) => {
             LNPY1224 NGN LOCL USSD(MTN) : APPLY FLAT_PERC 20:0.5
             LNPY1225 NGN LOCL USSD(*) : APPLY FLAT_PERC 20:0.5
             */
-
         //
             let appliedFeeId;
             if( Currency === "NGN" && CurrencyCountry === Country && Type === "CREDIT-CARD" ){
@@ -105,6 +104,7 @@ exports.calculateFee = async(req, res, next) => {
             }  else if( Currency === "NGN" && CurrencyCountry === Country && Type === "USSD"  ){
                 appliedFeeId = "LNPY1225";
             } 
+
 //javascript multiple case switch statement
 let appliedFee = 0;
 let chargeAmount = 0;
@@ -204,13 +204,10 @@ exports.getFeeRate = async(req, res, next) => {
         
         //find users from database
         let feeRates = await Fee.find(conditions).sort({ _id: -1 });
-        // let feeRates = await Fee.find({});
-
-             //check if user exists
+                  //check if user exists
              if (!feeRates) {
                 throw createError(404, 'fee rates does not exist');
             }
-
             console.log('feeRate :', feeRates);
 
             //send user to client
