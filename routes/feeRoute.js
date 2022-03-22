@@ -15,7 +15,7 @@ router
     .post( feeController.calculateFee);
 
   router
-  .route('/get-fees')
+  .route('/')
   .get( feeController.getFeeRate);
 
 

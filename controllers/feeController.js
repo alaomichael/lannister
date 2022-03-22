@@ -20,27 +20,12 @@ exports.storeFeeRate = async(req, res, next) => {
         let arr = configuration.split('\n');
         console.log("The splitted request payload:", arr);
 
-        let arr2 = configuration.split(':'); 
-        console.log("The splitted request payload:", arr2);
 
-//             let updatedDataAfterActivation = {
-//                 ...req.body,
-//             };
-// let id = req.params.id;
-//             let userToUpdate = await Fee.findByIdAndUpdate(
-//                 id,
-//                 updatedDataAfterActivation, {
-//                     new: true,
-//                     runValidators: true,
-//                 }
-//             );
-
-//             //check if user exists
-//             if (!userToUpdate) {
-//                 throw createError(404, 'User Account does not exist');
-//             }
-
-
+          //   create an object with the content from the req body
+          const newFeeConfiguration = await Fee.create({
+            FeeConfigurationSpec: arr });
+            // save the new user to the database
+            newFeeConfiguration.save();
             //send user to client
             res.status(200).json({
                 status: 'ok',
@@ -60,14 +45,7 @@ exports.storeFeeRate = async(req, res, next) => {
 //calculate fee
 exports.calculateFee = async(req, res, next) => {
     try {
-                /**
-            LNPY1221 NGN LOCL CREDIT-CARD(*) : APPLY PERC 1.4
-            LNPY1222 NGN INTL CREDIT-CARD(MASTERCARD) : APPLY PERC 3.8
-            LNPY1223 NGN INTL CREDIT-CARD(*) : APPLY PERC 5.8
-            LNPY1224 NGN LOCL USSD(MTN) : APPLY FLAT_PERC 20:0.5
-            LNPY1225 NGN LOCL USSD(*) : APPLY FLAT_PERC 20:0.5
-            */
-
+       
             /*
             {
     "ID": 91203,
@@ -115,16 +93,37 @@ exports.calculateFee = async(req, res, next) => {
             console.log("The Type is:", Type);
             console.log("The Country is:", Country);
 
-
         let {BearsFee}  = Customer;
         console.log("Customer Bears Fee:", BearsFee);
+
+             /**
+            LNPY1221 NGN LOCL CREDIT-CARD(*) : APPLY PERC 1.4
+            LNPY1222 NGN INTL CREDIT-CARD(MASTERCARD) : APPLY PERC 3.8
+            LNPY1223 NGN INTL CREDIT-CARD(*) : APPLY PERC 5.8
+            LNPY1224 NGN LOCL USSD(MTN) : APPLY FLAT_PERC 20:0.5
+            LNPY1225 NGN LOCL USSD(*) : APPLY FLAT_PERC 20:0.5
+            */
+
+        //
+            let appliedFeeId;
+            if( Currency === "NGN" && CurrencyCountry === Country && Type === "CREDIT-CARD" ){
+                appliedFeeId = "LNPY1221";
+            } else if( Currency === "NGN" && CurrencyCountry != Country && Type === "CREDIT-CARD" && Brand === "MASTERCARD" ){
+                appliedFeeId = "LNPY1222";
+            }  else if( Currency === "NGN" && CurrencyCountry != Country && Type === "CREDIT-CARD"  ){
+                appliedFeeId = "LNPY1223";
+            }  else if( Currency === "NGN" && CurrencyCountry === Country && Type === "USSD" && Brand === "MTN" ){
+                appliedFeeId = "LNPY1224";
+            }  else if( Currency === "NGN" && CurrencyCountry === Country && Type === "USSD"  ){
+                appliedFeeId = "LNPY1225";
+            } 
 //javascript multiple case switch statement
 let appliedFee = 0;
 let chargeAmount = 0;
 let SettlementAmount = 0;
 let amount = Amount;
 let rate="";
-switch(ID) {
+switch(appliedFeeId) {
     case "LNPY1221":
         rate = "APPLY PERC 1.4";
         appliedFee = ((1.4 * amount ) / 100);
@@ -190,7 +189,7 @@ console.log("The rate is:", rate);
             //send user to client
             res.status(200).json({
               
-                    AppliedFeeID: ID,
+                    AppliedFeeID: appliedFeeId,
                     AppliedFeeValue: appliedFee,
                     ChargeAmount: chargeAmount,
                     SettlementAmount: SettlementAmount
@@ -211,54 +210,30 @@ console.log("The rate is:", rate);
 //get fee rate
 exports.getFeeRate = async(req, res, next) => {
     try {
+        const conditions = {};
         
-//javascript multiple case switch statement
-var color = "yellow";
-var darkOrLight="";
-switch(color) {
-    case "yellow":case "pink":case "orange":
-        darkOrLight = "Light Fee Rate";
-        break;
-    case "blue":case "purple":case "brown":
-        darkOrLight = "Dark Fee Rate";
-        break;
-    default:
-        darkOrLight = "Unknown";
-}
+        //find users from database
+        let feeRates = await Fee.find(conditions).sort({ _id: -1 });
+        // let feeRates = await Fee.find({});
 
-console.log("The color is:", color);
-//darkOrLight="Light"
-
-            let updatedDataAfterActivation = {
-           
-            
-                ...req.body,
-            };
-
-            let userToUpdate = await Fee.findByIdAndUpdate(
-                user_id,
-                updatedDataAfterActivation, {
-                    new: true,
-                    runValidators: true,
-                }
-            );
-
-            //check if user exists
-            if (!userToUpdate) {
-                throw createError(404, 'User does not exist');
+             //check if user exists
+             if (!feeRates) {
+                throw createError(404, 'fee rates does not exist');
             }
 
+            console.log('feeRate :', feeRates);
 
             //send user to client
             res.status(200).json({
                 status: 'ok',
+                rates: feeRates
             });
         
     } catch (err) {
         if (err instanceof mongoose.CastError) {
             console.log('err :', err);
             return next(
-                createError(400, 'Invalid user ID or your account is deactivated or there is a missing parameter ,though your balance is more than #500.')
+                createError(400, 'Invalid ID or data does not exist')
             );
         }
         next(err);
