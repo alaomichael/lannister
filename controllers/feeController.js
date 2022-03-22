@@ -180,8 +180,10 @@ switch(appliedFeeId) {
 
 /**
  * If Customer.BearsFee is true, ChargeAmount = Transaction Amount + AppliedFeeValue
-If Customer.BearsFee is false, ChargeAmount = Transaction Amount
-SettlementAmount The amount LannisterPay will settle the merchant the transaction belongs to after the applied fee has been deducted. In essence: SettlementAmount = ChargeAmount - AppliedFeeValue
+*If Customer.BearsFee is false, ChargeAmount = Transaction Amount
+*SettlementAmount The amount LannisterPay will settle the merchant 
+the transaction belongs to after the applied fee has been deducted.
+* In essence: SettlementAmount = ChargeAmount - AppliedFeeValue
 */
 
 console.log("The rate is:", rate);

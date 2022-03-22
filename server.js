@@ -17,9 +17,9 @@ const app = require('./app');
 // update password
 //replace string "password" on mongo atlas database url with mongo atlas password
 
-// const DB =  process.env.DATABASE_URL.replace('<password>', process.env.DATABASE_PASSWORD);
+const DB =  process.env.DATABASE_URL.replace('<password>', process.env.DATABASE_PASSWORD);
 
-  const DB =  process.env.LOCALDB;
+//   const DB =  process.env.LOCALDB;
 
   //Setup database connection
 mongoose
